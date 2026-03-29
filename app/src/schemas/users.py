@@ -1,28 +1,34 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from typing import Optional
+from pydantic import BaseModel, EmailStr, field_validator, SecretStr, model_validator
 from fastapi import HTTPException, status
-from datetime import datetime
-
-
-class LoginUserRequest(BaseModel):
-    email: EmailStr
-    password: str
-
 
 class RegisterUserRequest(BaseModel):
-    username: str
-    email: EmailStr
-    password: str
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: SecretStr
+
+
+    @model_validator(mode="after")
+    def validate_request(self) -> "RegisterUserRequest":
+        if not self.username and not self.email:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Необходимо ввести либо email, либо username"
+            )
+        return self
+
 
     @field_validator("password")
     @staticmethod
-    def check_password(password: str) -> str:
-        if (len(password) < 8):
+    def check_password(password: SecretStr) -> SecretStr:
+        passw = password.get_secret_value()
+        if (len(passw) < 8):
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITYT,
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Длина пароля должна быть как минимум 8 символов"
             )
-        if not any(c.islower() for c in password) \
-                or not any(c.isupper() for c in password):
+        if not any(c.islower() for c in passw) \
+                or not any(c.isupper() for c in passw):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Пароль должен содержать и строчные, и заглавные буквы"
@@ -32,10 +38,8 @@ class RegisterUserRequest(BaseModel):
 
 class LoginUserResponse(BaseModel):
     id: int
-    username: str
+    username: Optional[str] = None
     email: EmailStr
-    created: datetime
-    active: bool
 
     class Config:
         from_attributes = True
