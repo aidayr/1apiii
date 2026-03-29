@@ -39,7 +39,7 @@ class RegisterUserRequest(BaseModel):
 class LoginUserResponse(BaseModel):
     id: int
     username: Optional[str] = None
-    email: EmailStr
+    email: Optional[EmailStr] = None
 
     class Config:
         from_attributes = True

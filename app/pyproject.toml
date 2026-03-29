@@ -1,0 +1,29 @@
+[tool.ruff.lint]
+select = [
+    "E",   # ошибки стиля
+    "F",   # базовые ошибки
+    "I",   # сортировка импортов
+    "W",   # предупреждения стиля
+    "UP",  # обновления синтаксиса для новых версий Python
+    "B",   # возможные баги (flake8-bugbear)
+]
+
+ignore = [
+    
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff]
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "build",
+    "dist"
+]

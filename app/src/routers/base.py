@@ -1,6 +1,6 @@
 from typing import List, Dict
 from pydantic import SecretStr, EmailStr
-from fastapi import status, HTTPException, APIRouter, Body
+from fastapi import status, HTTPException, APIRouter
 
 from ..schemas.users import RegisterUserRequest, LoginUserResponse
 
@@ -10,7 +10,7 @@ router = APIRouter()
 users: Dict[int, RegisterUserRequest] = {
     1: RegisterUserRequest(
         email="abc@gmail.com",
-        username="popi",
+        username="appok",
         password=SecretStr("Asdfghj12")
     ),
     2: RegisterUserRequest(
@@ -18,6 +18,8 @@ users: Dict[int, RegisterUserRequest] = {
         password=SecretStr("5G123asd")
     )
 }
+
+nid = 3
 
 @router.get("/users", status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
 async def get_user_by_email(email: EmailStr):
@@ -68,3 +70,30 @@ async def delete_user(
     
     users.pop(uid)
     return
+
+@router.post("/users", status_code=status.HTTP_201_CREATED,
+             response_model=LoginUserResponse)
+async def create_user(user_data: RegisterUserRequest):
+    global nid
+    
+    emails = {user.email for user in users.values() if user.email}
+    usernames = {user.username for user in users.values() if user.username}
+    
+    if user_data.email and user_data.email in emails:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Пользователь с таким email уже существует"
+                            )
+    
+    if user_data.username and user_data.username in usernames:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Пользователь с таким username уже существует"
+                            )
+    users[nid] = user_data
+    nid += 1
+    
+    return LoginUserResponse(
+        id=(nid - 1),
+        username=user_data.username,
+        email=user_data.email
+    )
+       
