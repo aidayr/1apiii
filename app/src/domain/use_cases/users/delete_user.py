@@ -1,8 +1,8 @@
 # use_cases/users/delete_user.py
 from fastapi import HTTPException, status
 
-from ...infrastructure.sqlite.database import database
-from ...infrastructure.sqlite.repositories.users import UserRepository
+from src.infrastructure.sqlite.database import database
+from src.infrastructure.sqlite.repositories.users import UserRepository
 
 
 class DeleteUserUseCase:

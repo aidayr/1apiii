@@ -2,10 +2,10 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from ..domain.use_cases.create_user import CreateUserUseCase
-from ..domain.use_cases.delete_user import DeleteUserUseCase
-from ..domain.use_cases.get_all_users import GetAllUsersUseCase
-from ..domain.use_cases.get_user_by_id import GetUserByIdUseCase
+from ..domain.use_cases.users.create_user import CreateUserUseCase
+from ..domain.use_cases.users.delete_user import DeleteUserUseCase
+from ..domain.use_cases.users.get_all_users import GetAllUsersUseCase
+from ..domain.use_cases.users.get_user_by_id import GetUserByIdUseCase
 from ..infrastructure.sqlite.database import get_db
 
 
