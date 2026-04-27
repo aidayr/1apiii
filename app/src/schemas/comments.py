@@ -2,9 +2,9 @@ from datetime import date, datetime
 
 from pydantic import Field
 
-from .base import Base
-from .posts import Post
-from .users import LoginUserRequest
+from src.schemas.base import Base
+from src.schemas.posts import Post
+from src.schemas.users import LoginUserRequest
 
 
 class Comment(Base):

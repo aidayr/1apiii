@@ -1,25 +1,40 @@
-# ruff: noqa: B008
-from fastapi import Depends
-from sqlalchemy.orm import Session
-
-from ..domain.use_cases.users.create_user import CreateUserUseCase
-from ..domain.use_cases.users.delete_user import DeleteUserUseCase
-from ..domain.use_cases.users.get_all_users import GetAllUsersUseCase
-from ..domain.use_cases.users.get_user_by_id import GetUserByIdUseCase
-from ..infrastructure.sqlite.database import get_db
-
-
-async def gett_user_by_id_use_case(db: Session = Depends(get_db)) -> GetUserByIdUseCase:
-    return GetUserByIdUseCase(db)
+from app.src.domain.locations.use_cases.create_location import CreateLocationUseCase
+from app.src.domain.locations.use_cases.delete_location import DeleteLocationUseCase
+from app.src.domain.locations.use_cases.get_all_locations import GetAllLocationsUseCase
+from app.src.domain.locations.use_cases.get_location_by_id import GetLocationByIdUseCase
+from app.src.domain.users.use_cases.create_user import CreateUserUseCase
+from app.src.domain.users.use_cases.delete_user import DeleteUserUseCase
+from app.src.domain.users.use_cases.get_all_users import GetAllUsersUseCase
+from app.src.domain.users.use_cases.get_user_by_id import GetUserByIdUseCase
 
 
-async def get_all_users_use_case(db: Session = Depends(get_db)) -> GetAllUsersUseCase:
+async def get_user_by_id_use_case() -> GetUserByIdUseCase:
+    return GetUserByIdUseCase()
+
+
+async def get_all_users_use_case() -> GetAllUsersUseCase:
     return GetAllUsersUseCase()
 
 
-async def get_create_user_use_case(db: Session = Depends(get_db)) -> CreateUserUseCase:
+async def create_user_use_case() -> CreateUserUseCase:
     return CreateUserUseCase()
 
 
-async def get_delete_user_use_case(db: Session = Depends(get_db)) -> DeleteUserUseCase:
+async def delete_user_use_case() -> DeleteUserUseCase:
     return DeleteUserUseCase()
+
+
+async def delete_location_use_case() -> DeleteLocationUseCase:
+    return DeleteLocationUseCase()
+
+
+async def create_location_use_case() -> CreateLocationUseCase:
+    return CreateLocationUseCase()
+
+
+async def get_all_locations_use_case() -> GetAllLocationsUseCase:
+    return GetAllLocationsUseCase()
+
+
+async def get_location_by_id_use_case() -> GetLocationByIdUseCase:
+    return GetLocationByIdUseCase()

@@ -1,105 +1,99 @@
 # ruff: noqa: B008
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, status
 
-from ..domain.use_cases.categories import (
-    CreateCategoryUseCase,
-    DeleteCategoryUseCase,
-    GetAllCategoriesUseCase,
-    GetCategoryByIdUseCase,
+from api.depends import (
+    create_location_use_case,
+    create_user_use_case,
+    delete_location_use_case,
+    delete_user_use_case,
+    get_all_locations_use_case,
+    get_all_users_use_case,
+    get_location_by_id_use_case,
+    get_user_by_id_use_case,
 )
-from ..domain.use_cases.locations import (
+from app.src.domain.locations.use_cases import (
     CreateLocationUseCase,
     DeleteLocationUseCase,
     GetAllLocationsUseCase,
     GetLocationByIdUseCase,
 )
-from ..domain.use_cases.users import (
+from app.src.domain.users.use_cases import (
     CreateUserUseCase,
     DeleteUserUseCase,
     GetAllUsersUseCase,
     GetUserByIdUseCase,
 )
-from ..infrastructure.sqlite.database import get_db
-from ..schemas.categories import Category
-from ..schemas.locations import Location
-from ..schemas.users import LoginUserResponse, RegisterUserRequest
+from src.schemas.locations import Location
+from src.schemas.users import LoginUserResponse, RegisterUserRequest
 
 router = APIRouter()
 
 
-@router.get("/users", response_model=list[LoginUserResponse])
-async def get_all_users(db: Session = Depends(get_db)):
-    use_case = GetAllUsersUseCase()
+@router.get("/users", response_model=list[LoginUserResponse], status=status.HTTP_200_OK)
+async def get_all_users(use_case: GetAllUsersUseCase = Depends(get_all_users_use_case)):
     return await use_case.execute()
 
 
-@router.get("/users/{user_id}", response_model=LoginUserResponse)
-async def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-    use_case = GetUserByIdUseCase()
+@router.get(
+    "/users/{user_id}",
+    response_model=list[LoginUserResponse],
+    status=status.HTTP_200_OK,
+)
+async def get_user_by_id(
+    user_id: int,
+    use_case: GetUserByIdUseCase = Depends(get_user_by_id_use_case),
+    status=status.HTTP_200_OK,
+):
     return await use_case.execute(user_id)
 
 
-@router.post("/users", response_model=LoginUserResponse, status_code=201)
-async def create_user(user_data: RegisterUserRequest, db: Session = Depends(get_db)):
-    use_case = CreateUserUseCase()
+@router.post(
+    "/users", response_model=LoginUserResponse, status_code=status.HTTP_201_CREATED
+)
+async def create_user(
+    user_data: RegisterUserRequest,
+    use_case: CreateUserUseCase = Depends(create_user_use_case),
+):
     return await use_case.execute(user_data)
 
 
-@router.delete("/users/{user_id}", status_code=204)
-async def delete_user(user_id: int, db: Session = Depends(get_db)):
-    use_case = DeleteUserUseCase()
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+    user_id: int, use_case: DeleteUserUseCase = Depends(delete_user_use_case)
+):
     await use_case.execute(user_id)
     return None
 
 
-@router.get("/locations", response_model=list[Location])
-async def get_all_locations(db: Session = Depends(get_db)):
-    use_case = GetAllLocationsUseCase()
-    return await use_case.execute()
-
-
-@router.get("/locations/{location_id}", response_model=Location)
-async def get_location_by_id(location_id: int, db: Session = Depends(get_db)):
-    use_case = GetLocationByIdUseCase()
+@router.get(
+    "/locations/{location_id}", response_model=Location, status_code=status.HTTP_200_OK
+)
+async def get_location_by_id(
+    location_id: int,
+    use_case: GetLocationByIdUseCase = Depends(get_location_by_id_use_case),
+):
     return await use_case.execute(location_id)
 
 
-@router.post("/locations", response_model=Location, status_code=201)
-async def create_location(name: str, db: Session = Depends(get_db)):
-    use_case = CreateLocationUseCase()
+@router.post("/locations", response_model=Location, status_code=status.HTTP_201_CREATED)
+async def create_location(
+    name: str,
+    use_case: CreateLocationUseCase = Depends(create_location_use_case),
+):
     return await use_case.execute(name)
 
 
-@router.delete("/locations/{location_id}", status_code=204)
-async def delete_location(location_id: int, db: Session = Depends(get_db)):
-    use_case = DeleteLocationUseCase()
+@router.delete("/locations/{location_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_location(
+    location_id: int,
+    use_case: DeleteLocationUseCase = Depends(delete_location_use_case),
+):
     await use_case.execute(location_id)
     return None
 
 
-@router.get("/categories", response_model=list[Category])
-async def get_all_categories(db: Session = Depends(get_db)):
-    use_case = GetAllCategoriesUseCase()
-    return await use_case.execute()
-
-
-@router.get("/categories/{category_id}", response_model=Category)
-async def get_category_by_id(category_id: int, db: Session = Depends(get_db)):
-    use_case = GetCategoryByIdUseCase()
-    return await use_case.execute(category_id)
-
-
-@router.post("/categories", response_model=Category, status_code=201)
-async def create_category(
-    title: str, description: str, slug: str, db: Session = Depends(get_db)
+@router.get("/locations", response_model=list[Location], status_code=status.HTTP_200_OK)
+async def get_all_locations(
+    use_case: GetAllLocationsUseCase = Depends(get_all_locations_use_case),
 ):
-    use_case = CreateCategoryUseCase()
-    return await use_case.execute(title, description, slug)
-
-
-@router.delete("/categories/{category_id}", status_code=204)
-async def delete_category(category_id: int, db: Session = Depends(get_db)):
-    use_case = DeleteCategoryUseCase()
-    await use_case.execute(category_id)
-    return None
+    return await use_case.execute()
