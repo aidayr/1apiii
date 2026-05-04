@@ -1,5 +1,5 @@
-from fastapi import HTTPException, status
-
+from src.core.exceptions.database_exceptions import PostNotFoundById
+from src.core.exceptions.domain_exceptions import PostNotFoundByIdException
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.posts import PostRepository
 
@@ -10,12 +10,10 @@ class DeletePostUseCase:
         self._repo = PostRepository()
 
     async def execute(self, post_id: int) -> None:
-        with self._database.session() as session:
-            post = self._repo.get_by_id(session, post_id)
-            if not post:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Пост не найден",
-                )
-            self._repo.delete(session, post_id)
-            session.commit()
+        try:
+            with self._database.session() as session:
+                self._repo.get_by_id(session, post_id)
+                self._repo.delete(session, post_id)
+                session.commit()
+        except PostNotFoundById as err:
+            raise PostNotFoundByIdException(id=post_id) from err

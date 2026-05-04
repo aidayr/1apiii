@@ -1,6 +1,5 @@
-# use_cases/users/delete_user.py
-from fastapi import HTTPException, status
-
+from src.core.exceptions.database_exceptions import UserNotFound
+from src.core.exceptions.domain_exceptions import UserNotFoundByIdException
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.users import UserRepository
 
@@ -12,11 +11,10 @@ class DeleteUserUseCase:
 
     async def execute(self, user_id: int) -> None:
         with self._database.session() as session:
-            user = self._repo.get_by_id(session=session, user_id=user_id)
-            if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Пользователя не существует",
-                )
-            self._repo.delete(session=session, user=user)
+            try:
+                self._repo.get_by_id(session, user_id)
+            except UserNotFound as err:
+                raise UserNotFoundByIdException(id=user_id) from err
+
+            self._repo.delete(session, user_id)
             session.commit()

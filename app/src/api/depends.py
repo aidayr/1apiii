@@ -1,11 +1,11 @@
-from app.src.domain.locations.use_cases.create_location import CreateLocationUseCase
-from app.src.domain.locations.use_cases.delete_location import DeleteLocationUseCase
-from app.src.domain.locations.use_cases.get_all_locations import GetAllLocationsUseCase
-from app.src.domain.locations.use_cases.get_location_by_id import GetLocationByIdUseCase
-from app.src.domain.users.use_cases.create_user import CreateUserUseCase
-from app.src.domain.users.use_cases.delete_user import DeleteUserUseCase
-from app.src.domain.users.use_cases.get_all_users import GetAllUsersUseCase
-from app.src.domain.users.use_cases.get_user_by_id import GetUserByIdUseCase
+from src.domain.locations.use_cases.create_location import CreateLocationUseCase
+from src.domain.locations.use_cases.delete_location import DeleteLocationUseCase
+from src.domain.locations.use_cases.get_all_locations import GetAllLocationsUseCase
+from src.domain.locations.use_cases.get_location_by_id import GetLocationByIdUseCase
+from src.domain.users.use_cases.create_user import CreateUserUseCase
+from src.domain.users.use_cases.delete_user import DeleteUserUseCase
+from src.domain.users.use_cases.get_all_users import GetAllUsersUseCase
+from src.domain.users.use_cases.get_user_by_id import GetUserByIdUseCase
 
 
 async def get_user_by_id_use_case() -> GetUserByIdUseCase:

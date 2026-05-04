@@ -1,5 +1,5 @@
-from fastapi import HTTPException, status
-
+from src.core.exceptions.database_exceptions import PostNotFoundById
+from src.core.exceptions.domain_exceptions import PostNotFoundByIdException
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.comments import CommentRepository
 from src.infrastructure.sqlite.repositories.posts import PostRepository
@@ -13,12 +13,10 @@ class GetCommentsByPostUseCase:
         self._post_repo = PostRepository()
 
     async def execute(self, post_id: int) -> list[Comment]:
-        with self._database.session() as session:
-            post = self._post_repo.get_by_id(session, post_id)
-            if not post:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Такого поста не существует",
-                )
-            comments = self._repo.get_by_post(session, post_id)
-            return [Comment.model_validate(comment) for comment in comments]
+        try:
+            with self._database.session() as session:
+                self._post_repo.get_by_id(session, post_id)
+                comments = self._post_repo.get_by_post(session, post_id)
+        except PostNotFoundById as err:
+            raise PostNotFoundByIdException(post_id=post_id) from err
+        return [Comment.model_validate(comment) for comment in comments]

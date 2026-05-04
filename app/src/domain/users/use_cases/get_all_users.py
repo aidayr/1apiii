@@ -11,6 +11,4 @@ class GetAllUsersUseCase:
     async def execute(self) -> list[LoginUserResponse]:
         with self._database.session() as session:
             users = self._repo.get_all(session=session)
-            if not users:
-                return []
             return [LoginUserResponse.model_validate(obj=user) for user in users]

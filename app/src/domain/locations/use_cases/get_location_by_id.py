@@ -1,5 +1,5 @@
-from fastapi import HTTPException, status
-
+from src.core.exceptions.database_exceptions import LocationNotFound
+from src.core.exceptions.domain_exceptions import LocationNotFoundByIdException
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.locations import LocationRepository
 from src.schemas.locations import Location
@@ -12,10 +12,8 @@ class GetLocationByIdUseCase:
 
     async def execute(self, location_id: int) -> Location:
         with self._database.session() as session:
-            location = self._repo.get_by_id(session, location_id)
-            if not location:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Такой категории не существует",
-                )
-            return Location.model_validate(location)
+            try:
+                location = self._repo.get_by_id(session, location_id)
+                return Location.model_validate(location)
+            except LocationNotFound as err:
+                raise LocationNotFoundByIdException(id=location_id) from err
