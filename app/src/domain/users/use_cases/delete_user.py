@@ -1,7 +1,17 @@
+import logging
+
 from src.core.exceptions.database_exceptions import UserNotFound
-from src.core.exceptions.domain_exceptions import UserNotFoundByIdException
+from src.core.exceptions.domain_exceptions import (
+    PermissionDeniedException,
+    UserNotFoundByUsernameException,
+    WrongPasswordException,
+)
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.users import UserRepository
+from src.resources.auth import verify_password
+from src.schemas.users import LoginUserResponse
+
+logger = logging.getLogger(__name__)
 
 
 class DeleteUserUseCase:
@@ -9,12 +19,26 @@ class DeleteUserUseCase:
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, user_id: int) -> None:
+    async def execute(
+        self, username: str, cur_user: LoginUserResponse, password: str
+    ) -> None:
         with self._database.session() as session:
             try:
-                self._repo.get_by_id(session, user_id)
-            except UserNotFound as err:
-                raise UserNotFoundByIdException(id=user_id) from err
+                user = self._repo.get_by_username(session, username)
+            except UserNotFound as exc:
+                error = UserNotFoundByUsernameException(username=username)
+                logger.error(error.detail)
+                raise error from exc
+            if cur_user.is_admin:
+                self._repo.delete(session, user.id)
+                return
+            if cur_user.username != username:
+                error = PermissionDeniedException()
+                logger.error(error.detail)
+                raise error
+            if not verify_password(password, user.password):
+                error = WrongPasswordException()
+                logger.error(error.detail)
+                raise error
 
-            self._repo.delete(session, user_id)
-            session.commit()
+            self._repo.delete(session, user.id)

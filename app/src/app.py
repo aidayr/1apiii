@@ -3,9 +3,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from .api.base import router as base_router
-from .infrastructure.sqlite.database import database
-from .infrastructure.sqlite.models import User  # noqa: F401
+from src.api.routers.auth import router as auth_router
+from src.api.routers.category import router as category_router
+from src.api.routers.location import router as location_router
+from src.api.routers.post import router as post_router
+from src.api.routers.users import router as users_router
+from src.infrastructure.sqlite.database import database
 
 
 @asynccontextmanager
@@ -25,7 +28,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    app.include_router(base_router, prefix="/base", tags=["Base APIs"])
+    app.include_router(users_router, tags=["Base APIs"])
+    app.include_router(auth_router, prefix="/auth", tags=["Base APIs"])
+    app.include_router(location_router)
+    app.include_router(category_router)
+    app.include_router(post_router)
 
     return app

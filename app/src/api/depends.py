@@ -1,11 +1,23 @@
+from src.domain.auth.use_cases.authenticate import AuthenticateUseCase
+from src.domain.auth.use_cases.create_access_token import CreateAccessTokenUseCase
+from src.domain.categories.use_cases.create_category import CreateCategoryUseCase
+from src.domain.categories.use_cases.delete_category import DeleteCategoryUseCase
+from src.domain.categories.use_cases.get_all_categories import GetAllCategoriesUseCase
+from src.domain.categories.use_cases.get_category_by_id import GetCategoryByIdUseCase
 from src.domain.locations.use_cases.create_location import CreateLocationUseCase
 from src.domain.locations.use_cases.delete_location import DeleteLocationUseCase
 from src.domain.locations.use_cases.get_all_locations import GetAllLocationsUseCase
 from src.domain.locations.use_cases.get_location_by_id import GetLocationByIdUseCase
+from src.domain.posts.use_cases.create_post import CreatePostUseCase
+from src.domain.posts.use_cases.delete_post import DeletePostUseCase
+from src.domain.posts.use_cases.get_all_posts import GetAllPostsUseCase
+from src.domain.posts.use_cases.get_post_by_id import GetPostByIdUseCase
+from src.domain.posts.use_cases.update_post import UpdatePostUseCase
 from src.domain.users.use_cases.create_user import CreateUserUseCase
 from src.domain.users.use_cases.delete_user import DeleteUserUseCase
 from src.domain.users.use_cases.get_all_users import GetAllUsersUseCase
 from src.domain.users.use_cases.get_user_by_id import GetUserByIdUseCase
+from src.domain.users.use_cases.update_user import UpdateUserUseCase
 
 
 async def get_user_by_id_use_case() -> GetUserByIdUseCase:
@@ -18,6 +30,10 @@ async def get_all_users_use_case() -> GetAllUsersUseCase:
 
 async def create_user_use_case() -> CreateUserUseCase:
     return CreateUserUseCase()
+
+
+async def update_user_use_case() -> UpdateUserUseCase:
+    return UpdateUserUseCase()
 
 
 async def delete_user_use_case() -> DeleteUserUseCase:
@@ -38,3 +54,47 @@ async def get_all_locations_use_case() -> GetAllLocationsUseCase:
 
 async def get_location_by_id_use_case() -> GetLocationByIdUseCase:
     return GetLocationByIdUseCase()
+
+
+def authenticate_user_use_case() -> AuthenticateUseCase:
+    return AuthenticateUseCase()
+
+
+def create_access_token_use_case() -> CreateAccessTokenUseCase:
+    return CreateAccessTokenUseCase()
+
+
+async def get_all_categories_use_case() -> GetAllCategoriesUseCase:
+    return GetAllCategoriesUseCase()
+
+
+async def get_category_by_id_use_case() -> GetCategoryByIdUseCase:
+    return GetCategoryByIdUseCase()
+
+
+async def create_category_use_case() -> CreateCategoryUseCase:
+    return CreateCategoryUseCase()
+
+
+async def delete_category_use_case() -> DeleteCategoryUseCase:
+    return DeleteCategoryUseCase()
+
+
+async def get_all_posts_use_case() -> GetAllPostsUseCase:
+    return GetAllPostsUseCase()
+
+
+async def get_post_by_id_use_case() -> GetPostByIdUseCase:
+    return GetPostByIdUseCase()
+
+
+async def create_post_use_case() -> CreatePostUseCase:
+    return CreatePostUseCase()
+
+
+async def update_post_use_case() -> UpdatePostUseCase:
+    return UpdatePostUseCase()
+
+
+async def delete_post_use_case() -> DeletePostUseCase:
+    return DeletePostUseCase()

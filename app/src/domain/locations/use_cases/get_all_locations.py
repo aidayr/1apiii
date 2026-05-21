@@ -1,6 +1,12 @@
+import logging
+
 from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.locations import LocationRepository
+from src.infrastructure.sqlite.repositories.locations import (
+    LocationRepository,
+)
 from src.schemas.locations import Location
+
+logger = logging.getLogger(__name__)
 
 
 class GetAllLocationsUseCase:

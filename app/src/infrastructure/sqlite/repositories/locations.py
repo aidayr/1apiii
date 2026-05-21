@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -7,6 +9,8 @@ from src.core.exceptions.database_exceptions import (
     LocationNotFound,
 )
 from src.infrastructure.sqlite.models.locationsModel import Location
+
+logger = logging.getLogger(__name__)
 
 
 class LocationRepository:
@@ -19,6 +23,9 @@ class LocationRepository:
         if not location:
             raise LocationNotFound()
         return location
+
+    def get_by_name(self, session: Session, name: str) -> Location | None:
+        return session.scalar(select(self._model).where(self._model.name == name))
 
     def get_all(self, session: Session) -> list[Location]:
         query = select(self._model)

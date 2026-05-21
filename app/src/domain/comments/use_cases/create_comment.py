@@ -1,4 +1,4 @@
-from src.core.exceptions.database_exceptions import PostNotFoundById, UserNotFoundById
+from src.core.exceptions.database_exceptions import PostNotFoundById, UserNotFound
 from src.core.exceptions.domain_exceptions import (
     PostNotFoundByIdException,
     UserNotFoundByIdException,
@@ -25,7 +25,7 @@ class CreateCommentUseCase:
                 comment = self._repo.create(session, text, author_id, post_id)
                 session.commit()
                 return Comment.model_validate(comment)
-        except UserNotFoundById as err:
+        except UserNotFound as err:
             raise UserNotFoundByIdException(id=author_id) from err
         except PostNotFoundById as err:
             raise PostNotFoundByIdException(id=post_id) from err

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.core.exceptions.database_exceptions import CommentNotFoundById
+from src.core.exceptions.database_exceptions import CommentNotFound
 from src.infrastructure.sqlite.models.commentsModel import Comment
 
 
@@ -13,7 +13,7 @@ class CommentRepository:
         query = select(self._model).where(self._model.id == comment_id)
         comment = session.scalar(query)
         if not comment:
-            raise CommentNotFoundById(id=comment_id)
+            raise CommentNotFound()
         return comment
 
     def get_all(self, session: Session) -> list[Comment]:

@@ -22,7 +22,9 @@ class Post(Base):
     title: Mapped[str] = mapped_column(String(150), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     published: Mapped[bool] = mapped_column(Boolean, default=True)
-    created: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow
+    )  # 👈 исправлено
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     location_id: Mapped[int | None] = mapped_column(
