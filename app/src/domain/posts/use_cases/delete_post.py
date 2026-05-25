@@ -5,8 +5,8 @@ from src.core.exceptions.domain_exceptions import (
     PermissionDeniedException,
     PostNotFoundByIdException,
 )
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.posts import PostRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.posts import PostRepository
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +17,9 @@ class DeletePostUseCase:
         self._repo = PostRepository()
 
     async def execute(self, post_id: int, current_user_id: int) -> None:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                post = self._repo.get_by_id(session, post_id)
+                post = await self._repo.get_by_id(session, post_id)
             except PostNotFound as err:
                 error = PostNotFoundByIdException(post_id=post_id)
                 logger.error(error.detail)
@@ -30,5 +30,5 @@ class DeletePostUseCase:
                 logger.error(error.detail)
                 raise error
 
-            self._repo.delete(session, post_id)
-            session.commit()
+            await self._repo.delete(session, post_id)
+            await session.commit()

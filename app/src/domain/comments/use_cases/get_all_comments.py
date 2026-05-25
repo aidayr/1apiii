@@ -1,5 +1,5 @@
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.comments import CommentRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.comments import CommentRepository
 from src.schemas.comments import Comment
 
 
@@ -9,6 +9,6 @@ class GetAllCommentsUseCase:
         self._repo = CommentRepository()
 
     async def execute(self) -> list[Comment]:
-        with self._database.session() as session:
-            comments = self._repo.get_all(session)
+        async with self._database.session() as session:
+            comments = await self._repo.get_all(session)
             return [Comment.model_validate(post) for post in comments]

@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions.database_exceptions import (
     CategoryNotFound,
@@ -11,7 +11,7 @@ from src.core.exceptions.database_exceptions import (
     UserNotFound,
 )
 from src.core.utils.db_error import parse_integrity_error
-from src.infrastructure.sqlite.models.postsModel import Post
+from src.infrastructure.postgres.models.postsModel import Post
 from src.schemas.posts import PostRequest
 
 logger = logging.getLogger(__name__)
@@ -21,29 +21,28 @@ class PostRepository:
     def __init__(self):
         self._model: type[Post] = Post
 
-    def get_by_id(self, session: Session, post_id: int) -> Post:
-        query = select(self._model).where(self._model.id == post_id)
-        post = session.scalar(query)
+    async def get_by_id(self, session: AsyncSession, post_id: int) -> Post:
+        post = await session.scalar(
+            select(self._model).where(self._model.id == post_id)
+        )
         if not post:
             raise PostNotFound()
         return post
 
-    def get_all(self, session: Session) -> list[Post]:
-        return list(session.scalars(select(self._model)).all())
+    async def get_all(self, session: AsyncSession) -> list[Post]:
+        result = await session.scalars(select(self._model))
+        return list(result.all())
 
-    def get_by_author(self, session: Session, author_id: int) -> list[Post]:
-        posts = list(
-            session.scalars(
-                select(self._model).where(self._model.author_id == author_id)
-            ).all()
+    async def get_by_author(self, session: AsyncSession, author_id: int) -> list[Post]:
+        result = await session.scalars(
+            select(self._model).where(self._model.author_id == author_id)
         )
-        if not posts:
-            raise PostNotFound()
+        posts = list(result.all())
         return posts
 
-    def create(
+    async def create(
         self,
-        session: Session,
+        session: AsyncSession,
         title: str,
         text: str,
         author_id: int,
@@ -59,7 +58,7 @@ class PostRepository:
                 category_id=category_id,
             )
             session.add(post)
-            session.flush()
+            await session.flush()
             return post
         except IntegrityError as err:
             final_cause = parse_integrity_error(err)
@@ -69,16 +68,23 @@ class PostRepository:
                 raise LocationNotFound() from err
             elif final_cause == "category_id":
                 raise CategoryNotFound() from err
+            else:
+                logger.error(f"Unexpected integrity error: {err}")
+                raise err
 
-    def update(self, session: Session, post_id: int, post_data: PostRequest) -> Post:
-        post = self.get_by_id(session, post_id)
+    async def update(
+        self, session: AsyncSession, post_id: int, post_data: PostRequest
+    ) -> Post:
+        post = await self.get_by_id(session, post_id)
         post.title = post_data.title
         post.text = post_data.text
-        post.location_id = post_data.location_id
-        post.category_id = post_data.category_id
+        if post_data.location_id and post_data.location_id != post.location_id:
+            post.location_id = post_data.location_id
+        if post_data.category_id and post_data.category_id != post.category_id:
+            post.category_id = post_data.category_id
         try:
-            session.flush()
-            session.refresh(post)
+            await session.flush()
+            await session.refresh(post)
             return post
         except IntegrityError as err:
             final_cause = parse_integrity_error(err)
@@ -87,7 +93,7 @@ class PostRepository:
             elif final_cause == "category_id":
                 raise CategoryNotFound() from err
 
-    def delete(self, session: Session, post_id: int) -> None:
-        post = self.get_by_id(session, post_id)
+    async def delete(self, session: AsyncSession, post_id: int) -> None:
+        post = await self.get_by_id(session, post_id)
         session.delete(post)
-        session.flush()
+        await session.flush()

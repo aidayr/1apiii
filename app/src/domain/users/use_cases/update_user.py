@@ -7,8 +7,8 @@ from src.core.exceptions.domain_exceptions import (
     WrongPasswordException,
 )
 from src.domain.auth.use_cases.create_access_token import CreateAccessTokenUseCase
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.users import UserRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.users import UserRepository
 from src.resources.auth import get_password_hash, verify_password
 from src.schemas.users import LoginUserResponse, UpdateUserRequest, UpdateUserResponse
 
@@ -27,8 +27,8 @@ class UpdateUserUseCase:
         user_data: UpdateUserRequest,
         current_user: LoginUserResponse,
     ) -> UpdateUserResponse:
-        with self._database.session() as session:
-            user = self._repo.get_by_username(session, username)
+        async with self._database.session() as session:
+            user = await self._repo.get_by_username(session, username)
             if not user:
                 error = UserNotFoundByUsernameException(username=username)
                 logger.error(error.detail)
@@ -45,7 +45,9 @@ class UpdateUserUseCase:
                 raise error
 
             if user_data.new_username and user_data.new_username != user.username:
-                existing = self._repo.get_by_username(session, user_data.new_username)
+                existing = await self._repo.get_by_username(
+                    session, user_data.new_username
+                )
                 if existing:
                     error = UsernameIsOccupiedException(username=user_data.new_username)
                     logger.error(error.detail)
@@ -55,8 +57,8 @@ class UpdateUserUseCase:
             if user_data.new_password:
                 user.password = get_password_hash(user_data.new_password)
 
-            session.commit()
-            session.refresh(user)
+            await session.commit()
+            await session.refresh(user)
 
             new_token = await self._token_use_case.execute(username=user.username)
 

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.infrastructure.sqlite.database import Base
+from src.infrastructure.postgres.database import Base
 
 if TYPE_CHECKING:
     from .categoriesModel import Category
@@ -22,9 +22,7 @@ class Post(Base):
     title: Mapped[str] = mapped_column(String(150), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     published: Mapped[bool] = mapped_column(Boolean, default=True)
-    created: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
-    )  # 👈 исправлено
+    created: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     location_id: Mapped[int | None] = mapped_column(

@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -5,17 +6,20 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.api.routers.auth import router as auth_router
 from src.api.routers.category import router as category_router
+from src.api.routers.comment import router as comment_router
 from src.api.routers.location import router as location_router
 from src.api.routers.post import router as post_router
 from src.api.routers.users import router as users_router
-from src.infrastructure.sqlite.database import database
+from src.infrastructure.postgres.database import database
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    database.init_db()
-
+    await database.init_db()
     yield
+    await database.dispose()
 
 
 def create_app() -> FastAPI:
@@ -33,5 +37,6 @@ def create_app() -> FastAPI:
     app.include_router(location_router)
     app.include_router(category_router)
     app.include_router(post_router)
+    app.include_router(comment_router)
 
     return app

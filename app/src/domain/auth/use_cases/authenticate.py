@@ -4,8 +4,8 @@ from src.core.exceptions.domain_exceptions import (
     UserNotFoundByUsernameException,
     WrongPasswordException,
 )
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.users import UserRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.users import UserRepository
 from src.resources.auth import verify_password
 from src.schemas.users import LoginUserResponse
 
@@ -19,8 +19,8 @@ class AuthenticateUseCase:
 
     async def execute(self, username: str, password: str) -> LoginUserResponse:
 
-        with self._database.session() as session:
-            user = self._repo.get_by_username(session, username)
+        async with self._database.session() as session:
+            user = await self._repo.get_by_username(session, username)
 
             if not user:
                 error = UserNotFoundByUsernameException(username=username)

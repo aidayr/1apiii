@@ -42,11 +42,3 @@ async def login_for_access_token(
     access_token = await create_token_use_case.execute(username=user.username)
 
     return Token(access_token=access_token, token_type="bearer")
-
-
-"""
-@router.post("/register", response_model=LoginUserResponse, status_code=201)
-async def register(user_data: RegisterUserRequest):
-    use_case = CreateUserUseCase()
-    return await use_case.execute(user_data)
-"""

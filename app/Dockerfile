@@ -1,12 +1,24 @@
-FROM python:3.13-alpine
-ENV PATH="${PATH}:/root/.local/bin"
-COPY ./src /app/src
-COPY alembic /app/migrations
-COPY alembic.ini /app/
-COPY requirements.txt /app/
-ENV PYTHONPATH /app/src
-WORKDIR /app
-RUN pip install -r ./requirements.txt
+FROM python:3.11-slim
 
-RUN chmod +x ./src/entry.sh
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем зависимости
+COPY requirements.txt .
+
+# Устанавливаем системные зависимости (для asyncpg)
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Python‑зависимости
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем код приложения
+COPY . .
+
+# Открываем портфс
 EXPOSE 8000
+
+# Команда запуска
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

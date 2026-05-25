@@ -1,5 +1,5 @@
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.categories import CategoryRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.categories import CategoryRepository
 from src.schemas.categories import Category
 
 
@@ -9,6 +9,6 @@ class GetAllCategoriesUseCase:
         self._repo = CategoryRepository()
 
     async def execute(self) -> list[Category]:
-        with self._database.session() as session:
-            categories = self._repo.get_all(session)
-            return [Category.model_validate(category) for category in categories]
+        async with self._database.session() as session:
+            categories = await self._repo.get_all(session)
+            return categories

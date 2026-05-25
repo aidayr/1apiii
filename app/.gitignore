@@ -8,8 +8,11 @@ venv/
 .venv
 *.egg-info/
 dist/
+build/
 .vscode/
 .idea/
 *.swp
 *.swo
 __pycache__/
+*.env
+!example.env

@@ -1,4 +1,3 @@
-# src/schemas/posts.py
 from pydantic import Field
 
 from .base import Base
@@ -15,7 +14,6 @@ class PostResponse(Base):
     id: int
     title: str
     text: str
-    # author_name: str
     author_id: int
     location_name: str | None = None
     category_name: str | None = None

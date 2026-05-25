@@ -2,8 +2,8 @@ import logging
 
 from src.core.exceptions.database_exceptions import CategoryAlreadyExists
 from src.core.exceptions.domain_exceptions import CategorySlugIsOccupiedException
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.categories import CategoryRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.categories import CategoryRepository
 from src.schemas.categories import Category
 
 logger = logging.getLogger(__name__)
@@ -15,10 +15,9 @@ class CreateCategoryUseCase:
         self._repo = CategoryRepository()
 
     async def execute(self, title: str, slug: str, description: str = None) -> Category:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                category = self._repo.create(session, title, description, slug)
-                session.commit()
+                category = await self._repo.create(session, title, description, slug)
                 return Category.model_validate(category)
             except CategoryAlreadyExists as err:
                 error = CategorySlugIsOccupiedException(slug=slug)

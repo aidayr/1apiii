@@ -35,28 +35,6 @@ async def get_all_posts(
     return await use_case.execute()
 
 
-@router.post("/posts", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
-async def create_post(
-    post_data: PostRequest,
-    current_user=Depends(AuthService.get_current_user),
-    use_case: CreatePostUseCase = Depends(create_post_use_case),
-):
-    try:
-        return await use_case.execute(
-            post_data,
-            current_user.id,
-            current_user.username,
-        )
-    except LocationNotFoundByIdException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.detail
-        ) from exc
-    except CategoryNotFoundByIdException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.detail
-        ) from exc
-
-
 @router.get(
     "/posts/{post_id}", response_model=PostResponse, status_code=status.HTTP_200_OK
 )
@@ -80,7 +58,7 @@ async def create_post(
     use_case: CreatePostUseCase = Depends(create_post_use_case),
 ):
     try:
-        return await use_case.execute(post_data)
+        return await use_case.execute(post_data, current_user.id, current_user.username)
     except UserNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

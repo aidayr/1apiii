@@ -1,7 +1,7 @@
-from src.core.exceptions.database_exceptions import CommentNotFoundById
+from src.core.exceptions.database_exceptions import CommentNotFound
 from src.core.exceptions.domain_exceptions import CommentNotFoundByIdException
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.comments import CommentRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.comments import CommentRepository
 
 
 class DeleteCommentUseCase:
@@ -11,9 +11,9 @@ class DeleteCommentUseCase:
 
     async def execute(self, comment_id: int) -> None:
         try:
-            with self._database.session() as session:
-                comment = self._repo.get_by_id(session, comment_id)
-        except CommentNotFoundById as err:
+            async with self._database.session() as session:
+                comment = await self._repo.get_by_id(session, comment_id)
+        except CommentNotFound as err:
             raise CommentNotFoundByIdException(comment_id=comment_id) from err
-        self._repo.delete(session, comment_id)
+        self._repo.delete(session, comment)
         session.commit()

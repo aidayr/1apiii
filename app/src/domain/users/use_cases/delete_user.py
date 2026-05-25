@@ -6,8 +6,8 @@ from src.core.exceptions.domain_exceptions import (
     UserNotFoundByUsernameException,
     WrongPasswordException,
 )
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.users import UserRepository
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.users import UserRepository
 from src.resources.auth import verify_password
 from src.schemas.users import LoginUserResponse
 
@@ -22,15 +22,15 @@ class DeleteUserUseCase:
     async def execute(
         self, username: str, cur_user: LoginUserResponse, password: str
     ) -> None:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                user = self._repo.get_by_username(session, username)
+                user = await self._repo.get_by_username(session, username)
             except UserNotFound as exc:
                 error = UserNotFoundByUsernameException(username=username)
                 logger.error(error.detail)
                 raise error from exc
             if cur_user.is_admin:
-                self._repo.delete(session, user.id)
+                await self._repo.delete(session, user.id)
                 return
             if cur_user.username != username:
                 error = PermissionDeniedException()
@@ -41,4 +41,4 @@ class DeleteUserUseCase:
                 logger.error(error.detail)
                 raise error
 
-            self._repo.delete(session, user.id)
+            await self._repo.delete(session, user.id)

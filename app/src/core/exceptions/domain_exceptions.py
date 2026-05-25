@@ -74,7 +74,7 @@ class WrongPasswordException(BaseDomainException):
 
 
 class LocationNotFoundByIdException(BaseDomainException):
-    _exception_text_template = "Локация с id = {id} не найдена"
+    _exception_text_template = "Локация с id = {location_id} не найдена"
 
     def __init__(self, location_id: int) -> None:
         detail = self._exception_text_template.format(location_id=location_id)
@@ -82,7 +82,7 @@ class LocationNotFoundByIdException(BaseDomainException):
 
 
 class LocationNotFoundByNameException(BaseDomainException):
-    _exception_text_template = "Локация с названием: {name} не найдена"
+    _exception_text_template = "Локация с названием: {locaion_name} не найдена"
 
     def __init__(self, name: int) -> None:
         detail = self._exception_text_template.format(name=name)
@@ -90,7 +90,7 @@ class LocationNotFoundByNameException(BaseDomainException):
 
 
 class LocationNameIsOccupiedException(BaseDomainException):
-    _exception_text_template = "Локация с названием: {name} уже занята"
+    _exception_text_template = "Локация с названием: {location_name} уже занята"
 
     def __init__(self, name: str) -> None:
         detail = self._exception_text_template.format(name=name)

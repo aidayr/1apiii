@@ -4,6 +4,11 @@ from src.domain.categories.use_cases.create_category import CreateCategoryUseCas
 from src.domain.categories.use_cases.delete_category import DeleteCategoryUseCase
 from src.domain.categories.use_cases.get_all_categories import GetAllCategoriesUseCase
 from src.domain.categories.use_cases.get_category_by_id import GetCategoryByIdUseCase
+from src.domain.comments.use_cases.create_comment import CreateCommentUseCase
+from src.domain.comments.use_cases.delete_comment import DeleteCommentUseCase
+from src.domain.comments.use_cases.get_all_comments import GetAllCommentsUseCase
+from src.domain.comments.use_cases.get_comment_by_id import GetCommentByIdUseCase
+from src.domain.comments.use_cases.get_comments_by_post import GetCommentsByPostUseCase
 from src.domain.locations.use_cases.create_location import CreateLocationUseCase
 from src.domain.locations.use_cases.delete_location import DeleteLocationUseCase
 from src.domain.locations.use_cases.get_all_locations import GetAllLocationsUseCase
@@ -98,3 +103,23 @@ async def update_post_use_case() -> UpdatePostUseCase:
 
 async def delete_post_use_case() -> DeletePostUseCase:
     return DeletePostUseCase()
+
+
+async def get_all_comments_use_case() -> GetAllCommentsUseCase:
+    return GetAllCommentsUseCase()
+
+
+async def get_comment_by_id_use_case() -> GetCommentByIdUseCase:
+    return GetCommentByIdUseCase()
+
+
+async def get_comments_by_post_use_case() -> GetCommentsByPostUseCase:
+    return GetCommentsByPostUseCase()
+
+
+async def create_comment_use_case() -> CreateCommentUseCase:
+    return CreateCommentUseCase()
+
+
+async def delete_comment_use_case() -> DeleteCommentUseCase:
+    return DeleteCommentUseCase()

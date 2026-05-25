@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.infrastructure.sqlite.database import Base
+from src.infrastructure.postgres.database import Base
 
 if TYPE_CHECKING:
     from .postsModel import Post

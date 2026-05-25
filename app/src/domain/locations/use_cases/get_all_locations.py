@@ -1,7 +1,7 @@
 import logging
 
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.locations import (
+from src.infrastructure.postgres.database import database
+from src.infrastructure.postgres.repositories.locations import (
     LocationRepository,
 )
 from src.schemas.locations import Location
@@ -15,6 +15,6 @@ class GetAllLocationsUseCase:
         self._repo = LocationRepository()
 
     async def execute(self) -> list[Location]:
-        with self._database.session() as session:
-            locations = self._repo.get_all(session)
+        async with self._database.session() as session:
+            locations = await self._repo.get_all(session)
             return [Location.model_validate(location) for location in locations]
